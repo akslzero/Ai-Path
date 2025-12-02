@@ -45,9 +45,7 @@ class CertificateController extends Controller
             'date' => now()->format('d M Y'),
         ];
 
-        // load view pdf
-        $pdf = Pdf::loadView('pdf.certificatepdf', $data);
-
-        return $pdf->download("certificate-{$course->id}.pdf");
+        $pdf = Pdf::loadView('pdf.certificatepdf', $data)->setPaper('a4', 'landscape');
+        return $pdf->download('certificate-'.$course->id.'.pdf');
     }
 }
