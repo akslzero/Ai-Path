@@ -1,27 +1,72 @@
-<!-- Floating AI Assistant -->
-<div x-data="{ open: false }" class="fixed bottom-6 right-6 z-50">
-
-    <!-- Bubble Button (kosong dulu) -->
-    <button @click="open = !open"
-        class="bg-white hover:bg-gray-200 rounded-full w-14 h-14 flex items-center justify-center shadow-lg transition">
-        <!-- ikon bisa ditaruh di sini nanti -->
-    </button>
-
-    <!-- Box kosong -->
-    <div x-show="open" x-transition @click.outside="open = false"
-        class="absolute bottom-20 right-0 w-[400px] h-[500px] bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden">
-
-        <!-- Header -->
-        <div class="flex justify-between items-center border-b p-4">
-            <h2 class="text-lg font-semibold text-gray-700">AI Assistant</h2>
-            <button @click="open = false" class="text-gray-500 hover:text-gray-700">
-                ✕
-            </button>
-        </div>
-
-        <!-- Kosongan -->
-        <div class="w-full h-full flex items-center justify-center text-gray-400 text-sm">
-            (kosong — isi nanti di sini)
-        </div>
-    </div>
+<!-- AI CHAT BUBBLE -->
+<div id="ai-bubble"
+     style="position:fixed; bottom:20px; right:20px;
+            width:60px; height:60px; background:#0d6efd;
+            color:white; border-radius:50%;
+            display:flex; align-items:center;
+            justify-content:center; font-size:26px;
+            cursor:pointer; z-index:9999;">
+  🤖
 </div>
+
+<!-- AI CHAT POPUP -->
+<div id="ai-popup"
+     style="position:fixed; bottom:90px; right:20px;
+            width:320px; background:white;
+            border:1px solid #ddd;
+            border-radius:10px;
+            display:none; flex-direction:column;
+            z-index:9999;">
+
+  <div style="background:#0d6efd; color:white; padding:10px;">
+    AI Assistant
+    <span id="ai-close" style="float:right; cursor:pointer;">✖</span>
+  </div>
+
+  <div id="ai-messages"
+       style="height:250px; overflow-y:auto; padding:10px;">
+  </div>
+
+  <div style="display:flex; border-top:1px solid #ddd;">
+    <input id="ai-input" type="text"
+           style="flex:1; border:none; padding:10px;"
+           placeholder="Tanya sesuatu...">
+    <button id="ai-send"
+            style="padding:10px; background:#0d6efd; color:white; border:none;">
+      Kirim
+    </button>
+  </div>
+</div>
+
+<script>
+const bubble = document.getElementById('ai-bubble');
+const popup  = document.getElementById('ai-popup');
+const close  = document.getElementById('ai-close');
+const send   = document.getElementById('ai-send');
+const input  = document.getElementById('ai-input');
+const msgBox = document.getElementById('ai-messages');
+
+bubble.onclick = () => popup.style.display = 'flex';
+close.onclick  = () => popup.style.display = 'none';
+
+send.onclick = async () => {
+  const text = input.value;
+  if (!text) return;
+
+  msgBox.innerHTML += `<div><b>Kamu:</b> ${text}</div>`;
+  input.value = "";
+
+  const res = await fetch("/ai-chat", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRF-TOKEN": "{{ csrf_token() }}"
+    },
+    body: JSON.stringify({ message: text })
+  });
+
+  const data = await res.json();
+  msgBox.innerHTML += `<div><b>AI:</b> ${data.reply}</div>`;
+  msgBox.scrollTop = msgBox.scrollHeight;
+};
+</script>

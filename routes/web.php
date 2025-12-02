@@ -21,12 +21,13 @@ use App\Http\Controllers\Instructor\DashboardController as InstructorDashboardCo
 use App\Http\Controllers\Instructor\CoursesController as InstructorCoursesController;
 use App\Http\Controllers\Instructor\ModulesController as InstructorModulesController;
 use App\Http\Controllers\Instructor\LessonsController as InstructorLessonsController;
+use App\Http\Controllers\AiController;
 
 
 
 
 
-
+Route::post('/ai-chat', [AiController::class, 'chat']);
 
 Route::get('/', function () {
     return view('welcome');
