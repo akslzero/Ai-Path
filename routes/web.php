@@ -12,6 +12,7 @@ use App\Http\Controllers\LessonController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\LeaderboardController;
+use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\Forum\QuestionController;
 use App\Http\Controllers\Forum\CommentController;
 use App\Http\Controllers\Forum\LikeController;
@@ -79,6 +80,7 @@ Route::middleware(['auth', 'role:member'])->group(function () {
     Route::post('/setting/update-password', [SettingController::class, 'updatePassword'])->name('setting.updatePassword');
     Route::post('/setting/upload-picture', [SettingController::class, 'uploadPicture'])->name('setting.uploadPicture');
     Route::post('/setting/delete-account', [SettingController::class, 'deleteAccount'])->name('setting.deleteAccount');
+    Route::get('/certificate', [CertificateController::class, 'index'])->name('certificate');
 });
 
 
