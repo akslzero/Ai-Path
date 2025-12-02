@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class UserProfile extends Model
 {
@@ -38,11 +39,19 @@ class UserProfile extends Model
      */
     public function addXp(int $xpAmount, int $threshold = 100)
     {
+        // Tambah XP
         $this->total_xp += $xpAmount;
 
-        // cek level up
+        DB::table('xp_logs')->insert([
+            'user_id' => $this->user_id,
+            'xp_amount' => $xpAmount,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        // Cek level up (bisa sekaligus naik beberapa level)
         while ($this->total_xp >= $threshold) {
-            $this->level += 1;
+            $this->level++;
             $this->total_xp -= $threshold;
         }
 
