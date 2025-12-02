@@ -61,6 +61,13 @@
             </a>
         </li>
 
+        <li>
+            <a href="{{ route('certificate') }}"
+                class="hover:text-blue-900 {{ request()->routeIs('certificate') ? 'text-blue-700 font-semibold' : '' }}">
+                Certificate
+            </a>
+        </li>
+
         <!-- 🔔 Notifikasi -->
         <li>
             <a href="#" class="relative hover:text-blue-900">
