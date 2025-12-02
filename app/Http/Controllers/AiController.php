@@ -23,9 +23,10 @@ class AiController extends Controller
         }
 
         try {
-            // ✅ INI YANG DIUBAH
-            $response = Http::withoutVerifying()->post(
-                "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=".$apiKey,
+            $response = Http::withoutVerifying()->withHeaders([
+                'Content-Type' => 'application/json'
+            ])->post(
+                "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" . $apiKey,
                 [
                     'contents' => [
                         [
@@ -39,6 +40,7 @@ class AiController extends Controller
 
             $data = $response->json();
 
+            // sesuai struktur log lo
             if (!isset($data['candidates'][0]['content']['parts'][0]['text'])) {
                 Log::error($data);
                 return response()->json([
@@ -49,7 +51,6 @@ class AiController extends Controller
             return response()->json([
                 'reply' => $data['candidates'][0]['content']['parts'][0]['text']
             ]);
-
         } catch (\Exception $e) {
             Log::error($e->getMessage());
 
