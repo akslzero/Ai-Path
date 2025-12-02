@@ -13,14 +13,13 @@
     {{-- Navbar --}}
     @include('partials.navbar')
 
-    {{-- Bubble / efek UI lu --}}
+    {{-- Bubble --}}
     @include('partials.bubble')
 
     <div class="max-w-4xl mx-auto mt-10 px-4">
 
         <h1 class="text-3xl font-bold mb-6 text-blue-700">Your Certificates</h1>
 
-        {{-- Jika user belum punya course --}}
         @if($courses->isEmpty())
             <div class="p-6 bg-white shadow rounded text-center">
                 <p class="text-gray-600">
@@ -29,7 +28,6 @@
                 </p>
             </div>
         @else
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
                 @foreach($courses as $course)
@@ -48,14 +46,13 @@
                             </span>
                         </p>
 
-                        {{-- Progress Bar --}}
                         <div class="w-full bg-gray-200 rounded h-3 mb-4">
                             <div class="h-3 rounded bg-blue-600" style="width: {{ $percent }}%;"></div>
                         </div>
 
                         @if($completed)
                             <a href="{{ route('certificate.download', $course->id) }}"
-                            class="block text-center bg-green-600 hover:bg-green-700 text-white py-2 rounded">
+                               class="block text-center bg-green-600 hover:bg-green-700 text-white py-2 rounded">
                                 Download Certificate
                             </a>
                         @else

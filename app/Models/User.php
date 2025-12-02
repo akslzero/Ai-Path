@@ -26,4 +26,10 @@ class User extends Authenticatable
     {
         return $this->hasOne(\App\Models\UserProfile::class);
     }
+    
+    public function courseProgress()
+    {
+        return $this->hasMany(\App\Models\UserCourseProgress::class);
+    }
+
 }

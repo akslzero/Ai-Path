@@ -74,13 +74,19 @@ Route::middleware(['auth', 'role:member'])->group(function () {
     // profile
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
 
+    // certificate
+    Route::get('/certificate', [CertificateController::class, 'index'])->name('certificate');
+
+    Route::get('/certificate/download/{course}', [CertificateController::class, 'download'])
+    ->name('certificate.download');
+
+
     // settings
     Route::get('/setting', [SettingController::class, 'index'])->name('setting');
     Route::post('/setting/update-profile', [SettingController::class, 'updateProfile'])->name('setting.updateProfile');
     Route::post('/setting/update-password', [SettingController::class, 'updatePassword'])->name('setting.updatePassword');
     Route::post('/setting/upload-picture', [SettingController::class, 'uploadPicture'])->name('setting.uploadPicture');
     Route::post('/setting/delete-account', [SettingController::class, 'deleteAccount'])->name('setting.deleteAccount');
-    Route::get('/certificate', [CertificateController::class, 'index'])->name('certificate');
 });
 
 
