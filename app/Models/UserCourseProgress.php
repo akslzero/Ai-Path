@@ -40,4 +40,14 @@ class UserCourseProgress extends Model
     {
         return $this->belongsTo(Module::class, 'current_module_id');
     }
+
+    public function setProgressPercentAttribute($value)
+    {
+        $this->attributes['progress_percent'] = $value;
+
+        // kalau nilai 100%, otomatis set completed
+        if ((int)$value === 100) {
+            $this->attributes['status'] = 'completed';
+        }
+    }
 }
