@@ -23,7 +23,28 @@ class LessonController extends Controller
             ->orderBy('id')
             ->first();
 
-        return view('lesson', compact('lesson', 'question', 'nextLesson'));
+        // Hitung progress lesson di modul yg sama
+        $allLessons = Lesson::where('module_id', $lesson->module_id)
+            ->orderBy('id')
+            ->get();
+
+        $currentIndex = $allLessons->search(function ($item) use ($lesson) {
+            return $item->id === $lesson->id;
+        }) + 1; // +1 biar mulai dari 1
+
+        $totalLessons = $allLessons->count();
+
+        // persen progress
+        $progressPercent = ($currentIndex / $totalLessons) * 100;
+
+        return view('lesson', compact(
+            'lesson',
+            'question',
+            'nextLesson',
+            'progressPercent',
+            'currentIndex',
+            'totalLessons'
+        ));
     }
 
     // Handle submit jawaban user
@@ -35,12 +56,12 @@ class LessonController extends Controller
         ]);
 
         $user = Auth::user();
-        $question = Question::findOrFail($request->question_id);
+        $question = Question::with('options')->findOrFail($request->question_id);
         $option = OptionLesson::findOrFail($request->selected_option_id);
 
         $isCorrect = $option->is_correct;
 
-        // Simpan jawaban user
+        // simpan jawaban
         Answer::updateOrCreate(
             [
                 'user_id' => $user->id,
@@ -53,21 +74,29 @@ class LessonController extends Controller
             ]
         );
 
-        // Cari lesson berikutnya dalam modul yang sama
+        // cari jawaban yg benar
+        $correctOption = $question->options->where('is_correct', 1)->first();
+
+        // cari next lesson
         $lessonObj = Lesson::findOrFail($lesson);
         $nextLesson = Lesson::where('module_id', $lessonObj->module_id)
             ->where('id', '>', $lessonObj->id)
             ->orderBy('id')
             ->first();
 
+        // data buat highlight
+        $sessionData = [
+            'selected_option_id' => $option->id,
+            'correct_option_id' => $correctOption->id,
+            'status' => $isCorrect ? 'Jawaban benar!' : 'Jawaban salah!',
+        ];
+
         if ($isCorrect) {
-            return redirect()->back()->with([
-                'status' => 'Jawaban benar!',
-                'show_continue' => true,
-                'next_lesson_id' => $nextLesson ? $nextLesson->id : null,
-                'is_last_lesson' => $nextLesson ? false : true,
-            ]);
+            $sessionData['show_continue'] = true;
+            $sessionData['next_lesson_id'] = $nextLesson ? $nextLesson->id : null;
+            $sessionData['is_last_lesson'] = $nextLesson ? false : true;
         }
-        return redirect()->back()->with('status', 'Jawaban salah!');
+
+        return redirect()->back()->with($sessionData);
     }
 }

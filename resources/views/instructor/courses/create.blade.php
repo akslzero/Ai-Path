@@ -14,8 +14,11 @@
             <h1 class="text-2xl font-semibold text-slate-800 mb-1">Add New Course</h1>
             <p class="text-slate-500 mb-6">Buat course baru untuk instruktur.</p>
 
-            <form action="{{ route('instructor.courses.store') }}" method="POST" class="space-y-6">
+            <form action="{{ route('instructor.courses.store') }}" method="POST" enctype="multipart/form-data" <!--
+                Wajib untuk upload -->
+
                 @csrf
+
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Course Title</label>
                     <input type="text" name="title" value="{{ old('title') }}"
@@ -30,6 +33,16 @@
                     <textarea name="description" rows="4"
                         class="w-full rounded-lg border-slate-300 focus:border-sky-500 focus:ring-sky-500">{{ old('description') }}</textarea>
                     @error('description')
+                        <p class="text-rose-600 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- 🔥 Upload Icon -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Course Icon</label>
+                    <input type="file" name="icon" accept="image/*"
+                        class="w-full rounded-lg border-slate-300 bg-white cursor-pointer focus:border-sky-500 focus:ring-sky-500">
+                    @error('icon')
                         <p class="text-rose-600 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>

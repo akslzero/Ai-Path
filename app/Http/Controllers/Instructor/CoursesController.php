@@ -35,9 +35,15 @@ class CoursesController extends Controller
         $data = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'icon' => 'nullable|image|mimes:png,jpg,jpeg,svg|max:2048',
         ]);
 
+        if ($request->hasFile('icon')) {
+            $data['icon'] = $request->file('icon')->store('course_icons', 'public');
+        }
+
         Course::create($data);
+
         return redirect()->route('instructor.manage')->with('success', 'Course created');
     }
 
@@ -51,9 +57,15 @@ class CoursesController extends Controller
         $data = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'icon' => 'nullable|image|mimes:png,jpg,jpeg,svg|max:2048',
         ]);
 
+        if ($request->hasFile('icon')) {
+            $data['icon'] = $request->file('icon')->store('course_icons', 'public');
+        }
+
         $course->update($data);
+
         return redirect()->route('instructor.courses.show', $course->id)->with('success', 'Course updated');
     }
 
