@@ -11,16 +11,20 @@
 <body class="bg-gray-100">
 
     @include('partials.navbar')
+    @include('partials.bubble')
 
-    <div class="container mx-auto p-6">
-        <h1 class="text-3xl font-bold mb-6">Q&A Discussion</h1>
+    <div class="mx-auto max-w-full px-4 sm:px-6 lg:px-8 py-6">
+
+        <h1 class="text-3xl font-bold mb-6 text-center sm:text-left">Q&A Discussion</h1>
 
         <!-- Search + Filter Tags -->
-        <form action="{{ route('forum.index') }}" method="GET" class="mb-6 flex gap-2" id="filterForm">
+        <form action="{{ route('forum.index') }}" method="GET"
+            class="mb-6 flex flex-col sm:flex-row gap-2 items-start sm:items-center" id="filterForm">
             <input type="text" name="q" value="{{ request('q') }}"
                 placeholder="Cari pertanyaan, komentar, atau tag..."
-                class="flex-1 border rounded px-4 py-2 focus:outline-none focus:ring focus:border-blue-300">
-            <select name="tag" class="border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300"
+                class="flex-1 border rounded px-4 py-2 w-full sm:w-auto focus:outline-none focus:ring focus:border-blue-300">
+            <select name="tag"
+                class="border rounded px-3 py-2 w-full sm:w-auto focus:outline-none focus:ring focus:border-blue-300"
                 onchange="document.getElementById('filterForm').submit()">
                 <option value="">-- Filter by Tag --</option>
                 @foreach ($allTags as $tag)
@@ -28,18 +32,23 @@
                     </option>
                 @endforeach
             </select>
-            <button type="submit" class="bg-blue-500 text-white px-4 rounded hover:bg-blue-600">Search</button>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full sm:w-auto">
+                Search
+            </button>
         </form>
 
         @auth
             <div class="mb-6">
                 <a href="{{ route('questions.create') }}"
-                    class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Ask Question</a>
+                    class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 w-full sm:w-auto inline-block text-center">
+                    Ask Question
+                </a>
             </div>
         @endauth
 
         @foreach ($questions as $q)
-            <div class="bg-white rounded-lg shadow-md p-6 mb-6 flex flex-col justify-between">
+            <div
+                class="bg-white rounded-lg shadow-md p-6 mb-6 flex flex-col justify-between w-full max-w-full overflow-hidden">
 
                 <!-- Konten pertanyaan -->
                 <div>
@@ -47,10 +56,12 @@
 
                     <!-- Tags -->
                     @if (!empty($q->tags))
-                        <div class="mb-4">
+                        <div class="mb-4 flex flex-wrap gap-2 overflow-x-auto">
                             @foreach ($q->tags as $tag)
                                 <span
-                                    class="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-sm mr-2">{{ $tag }}</span>
+                                    class="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-sm whitespace-nowrap">
+                                    {{ $tag }}
+                                </span>
                             @endforeach
                         </div>
                     @endif
@@ -73,17 +84,48 @@
                 @php
                     $user = $q->user ?? null;
                     $profile = $user?->profile ?? null;
+
+                    // Warna background avatar
+                    $colors = [
+                        'bg-red-400',
+                        'bg-blue-400',
+                        'bg-green-400',
+                        'bg-yellow-400',
+                        'bg-purple-400',
+                        'bg-pink-400',
+                        'bg-indigo-400',
+                        'bg-teal-400',
+                    ];
+
+                    $name = $user?->name ?? 'Guest';
+                    $hash = crc32($name);
+                    $bgColor = $colors[$hash % count($colors)];
+
+                    // Inisial nama
+                    $initials = collect(explode(' ', $name))
+                        ->map(fn($part) => strtoupper(substr($part, 0, 1)))
+                        ->join(' ');
                 @endphp
+
+
                 <div class="flex justify-end items-center mt-4">
                     <div class="flex items-center">
                         <div class="text-right mr-2">
-                            <p class="font-medium text-sm">{{ $user?->name ?? 'Guest' }}</p>
+                            <p class="font-medium text-sm">{{ $name }}</p>
                             <p class="text-gray-500 text-xs">{{ $q->created_at->format('d M Y H:i') }}</p>
                         </div>
-                        <img src="{{ $profile?->profile_picture ? asset('storage/' . $profile->profile_picture) : asset('default-avatar.png') }}"
-                            alt="Profile" class="w-10 h-10 rounded-full">
+
+                        @if ($profile?->profile_picture)
+                            <img src="{{ asset('storage/' . $profile->profile_picture) }}" alt="Profile"
+                                class="w-10 h-10 rounded-full object-cover">
+                        @else
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center {{ $bgColor }}">
+                                <span class="text-sm font-bold text-white">{{ $initials }}</span>
+                            </div>
+                        @endif
                     </div>
                 </div>
+
 
                 <!-- Likes & komentar -->
                 @php
@@ -112,7 +154,6 @@
                         <span>{{ $q->comments->count() }}</span>
                     </a>
                 </div>
-
 
             </div>
         @endforeach

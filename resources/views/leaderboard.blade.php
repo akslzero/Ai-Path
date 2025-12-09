@@ -11,6 +11,7 @@
 <body class="bg-gray-100 min-h-screen">
 
     @include('partials.navbar')
+    @include('partials.bubble')
 
     <div class="max-w-3xl mx-auto mt-10 bg-white shadow-md rounded-lg p-6">
         <h1 class="text-2xl font-bold mb-6 text-center">Leaderboard</h1>
@@ -23,27 +24,47 @@
                         <span class="text-lg font-bold w-6 text-center">{{ $leader->rank }}</span>
 
                         <!-- Avatar -->
-                        <img src="{{ $leader->user->profile && $leader->user->profile->profile_picture ? asset('storage/' . $leader->user->profile->profile_picture) : asset('images/default-avatar.png') }}"
-                            alt="Avatar" class="h-12 w-12 rounded-full object-cover border">
+                        @php
+                            $profile = $leader->user->profile ?? null;
+                            $initials = $leader->user->name
+                                ? collect(explode(' ', $leader->user->name))
+                                    ->map(fn($n) => strtoupper(substr($n, 0, 1)))
+                                    ->take(2)
+                                    ->join('')
+                                : '';
+                            $bgColor = 'bg-blue-500';
+                        @endphp
 
-                        <!-- Name -->
-                        <span class="text-gray-800 font-semibold">{{ $leader->user->name }}</span>
+                        <div class="h-12 w-12 rounded-full border flex items-center justify-center">
+                            @if ($profile && $profile->profile_picture)
+                                <img src="{{ asset('storage/' . $profile->profile_picture) }}" alt="Profile Picture"
+                                    class="h-12 w-12 rounded-full object-cover">
+                            @else
+                                <div
+                                    class="h-12 w-12 rounded-full flex items-center justify-center {{ $bgColor }}">
+                                    <span class="text-sm font-bold text-white">{{ $initials }}</span>
+                                </div>
+                            @endif
+                        </div>
 
-                        <!-- Badge -->
-                        @if ($leader->badge)
-                            <span
-                                class="ml-2 px-2 py-1 text-sm rounded bg-yellow-100 text-yellow-800">{{ $leader->badge }}</span>
-                        @endif
+                        <!-- Name + Badge -->
+                        <div class="flex items-center gap-2">
+                            <span class="text-gray-800 font-semibold">{{ $leader->user->name }}</span>
+                            @if ($leader->badge)
+                                <span
+                                    class="px-2 py-1 text-sm rounded bg-yellow-100 text-yellow-800">{{ $leader->badge }}</span>
+                            @endif
+                        </div>
                     </div>
 
                     <!-- Weekly XP -->
-                    <span class="text-gray-600 font-medium">{{ $leader->weekly_xp }} XP (Level
-                        {{ $leader->level }})</span>
+                    <span class="text-gray-600 font-medium">{{ $leader->weekly_xp }} XP</span>
                 </div>
             @empty
                 <p class="text-center text-gray-500">No leaderboard data yet.</p>
             @endforelse
         </div>
+
 
     </div>
 

@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Certificate</title>
 
-    {{-- Tailwind --}}
-    <script src="https://cdn.tailwindcss.com"></script>
+    {{-- Vite --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
+
 <body class="bg-gray-100 min-h-screen">
 
     {{-- Navbar --}}
@@ -20,17 +22,18 @@
 
         <h1 class="text-3xl font-bold mb-6 text-blue-700">Your Certificates</h1>
 
-        @if($courses->isEmpty())
+        {{-- Jika user belum punya course --}}
+        @if ($courses->isEmpty())
             <div class="p-6 bg-white shadow rounded text-center">
                 <p class="text-gray-600">
-                    Lu belum ngambil course apa pun bro 😁  
-                    <span class="font-semibold">Kumpulin XP dulu baru bisa dapet sertifikat!</span>
+                    Anda belum menyelesaikan course apa pun 😊
+                    <span class="font-semibold">Silahkan selesaikan course untuk mendapatkan sertifikat!</span>
                 </p>
             </div>
         @else
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-                @foreach($courses as $course)
+                @foreach ($courses as $course)
                     @php
                         $percent = $progress[$course->id]->progress_percent ?? 0;
                         $completed = $percent >= 100;
@@ -46,13 +49,14 @@
                             </span>
                         </p>
 
+                        {{-- Progress Bar --}}
                         <div class="w-full bg-gray-200 rounded h-3 mb-4">
                             <div class="h-3 rounded bg-blue-600" style="width: {{ $percent }}%;"></div>
                         </div>
 
-                        @if($completed)
+                        @if ($completed)
                             <a href="{{ route('certificate.download', $course->id) }}"
-                               class="block text-center bg-green-600 hover:bg-green-700 text-white py-2 rounded">
+                                class="block text-center bg-green-600 hover:bg-green-700 text-white py-2 rounded">
                                 Download Certificate
                             </a>
                         @else
@@ -63,7 +67,6 @@
                         @endif
 
                     </div>
-
                 @endforeach
 
             </div>
@@ -72,4 +75,5 @@
     </div>
 
 </body>
+
 </html>

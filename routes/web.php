@@ -82,6 +82,9 @@ Route::middleware(['auth', 'role:member'])->group(function () {
     Route::get('/certificate/download/{course}', [CertificateController::class, 'download'])
         ->name('certificate.download');
 
+    Route::get('/ai-chat/history', [AiController::class, 'history'])->middleware('auth');
+
+
 
     // settings
     Route::get('/setting', [SettingController::class, 'index'])->name('setting');

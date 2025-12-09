@@ -26,15 +26,42 @@
         <!-- Profile Dropdown -->
         <li x-data="{ open: false }" class="relative">
             <button @click="open = !open"
-                class="h-9 w-9 rounded-full overflow-hidden flex items-center justify-center hover:bg-gray-200 transition">
+                class="h-9 w-9 rounded-full overflow-hidden hover:ring-2 hover:ring-blue-300 transition">
+
                 @php
-                    $profile = Auth::user()?->profile ?? null;
-                    $profilePicture =
-                        $profile && $profile->profile_picture
-                            ? asset('storage/' . $profile->profile_picture)
-                            : asset('images/default-avatar.png'); // fallback default
+                    $user = Auth::user();
+                    $profile = $user?->profile;
+
+                    // daftar warna
+                    $colors = [
+                        'bg-red-400',
+                        'bg-blue-400',
+                        'bg-green-400',
+                        'bg-yellow-400',
+                        'bg-purple-400',
+                        'bg-pink-400',
+                        'bg-indigo-400',
+                        'bg-teal-400',
+                    ];
+
+                    $name = $user?->name ?? 'Guest';
+                    $hash = crc32($name);
+                    $bgColor = $colors[$hash % count($colors)];
+
+                    // inisial nama
+                    $initials = collect(explode(' ', $name))
+                        ->map(fn($part) => strtoupper(substr($part, 0, 1)))
+                        ->join(' ');
                 @endphp
-                <img src="{{ $profilePicture }}" alt="Profile" class="h-full w-full object-cover">
+
+                @if ($profile?->profile_picture)
+                    <img src="{{ asset('storage/' . $profile->profile_picture) }}" alt="Profile"
+                        class="h-full w-full object-cover">
+                @else
+                    <div class="h-full w-full flex items-center justify-center {{ $bgColor }}">
+                        <span class="text-sm font-bold text-white">{{ $initials }}</span>
+                    </div>
+                @endif
             </button>
 
 

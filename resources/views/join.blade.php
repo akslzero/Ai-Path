@@ -26,18 +26,19 @@
             @csrf
 
             <label class="text-sm font-semibold">Username</label>
-            <input type="text" name="username" class="w-full border rounded p-2 mb-3" placeholder="username"
+            <input type="text" name="username" class="w-full border rounded p-2 mb-3" placeholder="Nama user"
                 required>
 
             <label class="text-sm font-semibold">Full name</label>
-            <input type="text" name="full_name" class="w-full border rounded p-2 mb-3" placeholder="full name"
+            <input type="text" name="full_name" class="w-full border rounded p-2 mb-3" placeholder="Nama lengkap"
                 required>
 
             <label class="text-sm font-semibold">Email</label>
-            <input type="email" name="email" class="w-full border rounded p-2 mb-3" placeholder="email" required>
+            <input type="email" name="email" class="w-full border rounded p-2 mb-3"
+                placeholder="Pastikan email aktif" required>
 
             <label class="text-sm font-semibold">Message</label>
-            <textarea name="message" class="w-full border rounded p-2 mb-4" rows="4" placeholder="type message"></textarea>
+            <textarea name="message" class="w-full border rounded p-2 mb-4" rows="4" placeholder="Alasan ingin bergabung"></textarea>
 
             <button class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
                 Submit

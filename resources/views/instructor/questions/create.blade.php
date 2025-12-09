@@ -32,8 +32,8 @@
                     <select name="question_type" id="question_type"
                         class="w-full rounded-lg border-slate-300 focus:border-sky-500 focus:ring-sky-500">
                         <option value="multiple_choice">Multiple Choice</option>
-                        <option value="text">Text</option>
-                        <option value="true_false">True/False</option>
+                        {{-- <option value="text">Text</option>
+                        <option value="true_false">True/False</option> --}}
                     </select>
                 </div>
 

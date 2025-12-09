@@ -78,22 +78,59 @@
         </form>
 
         <!-- Upload Profile Picture -->
+        @php
+            // daftar warna background biar tetap aesthetic
+            $colors = [
+                'bg-red-400',
+                'bg-blue-400',
+                'bg-green-400',
+                'bg-yellow-400',
+                'bg-purple-400',
+                'bg-pink-400',
+                'bg-indigo-400',
+                'bg-teal-400',
+            ];
+
+            $hash = crc32($user->name);
+            $bgColor = $colors[$hash % count($colors)];
+
+            // inisial user
+            $initials = collect(explode(' ', $user->name))
+                ->map(fn($part) => strtoupper(substr($part, 0, 1)))
+                ->join(' ');
+        @endphp
+
+
         <form action="{{ route('setting.uploadPicture') }}" method="POST" enctype="multipart/form-data"
             class="mb-6">
             @csrf
             <h2 class="text-lg font-semibold mb-2">Profile Picture</h2>
+
             <div class="flex items-center mb-2">
-                <img id="profilePreview"
-                    src="{{ $profile && $profile->profile_picture ? asset('storage/' . $profile->profile_picture) : asset('images/default-avatar.png') }}"
-                    class="h-16 w-16 rounded-full object-cover border mr-4">
+
+                {{-- Preview image / initial avatar --}}
+                @if ($profile && $profile->profile_picture)
+                    <img id="profilePreview" src="{{ asset('storage/' . $profile->profile_picture) }}"
+                        class="h-16 w-16 rounded-full object-cover border mr-4">
+                @else
+                    <div id="profilePreviewFallback"
+                        class="h-16 w-16 rounded-full border mr-4 flex items-center justify-center {{ $bgColor }}">
+                        <span class="text-lg font-bold text-white">{{ $initials }}</span>
+                    </div>
+                @endif
+
                 <input type="file" name="profile_picture" accept="image/*" onchange="previewImage(event)">
             </div>
-            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Upload
-                Picture</button>
+
+            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                Upload Picture
+            </button>
+
             @error('profile_picture')
                 <p class="text-red-500 text-sm">{{ $message }}</p>
             @enderror
         </form>
+
 
         <!-- Delete Account -->
         <form action="{{ route('setting.deleteAccount') }}" method="POST"

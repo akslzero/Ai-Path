@@ -5,9 +5,31 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Models\ChatHistory;
+use Illuminate\Support\Facades\Auth;
 
 class AiController extends Controller
 {
+
+    public function profilePage() // atau method apapun yang nge-render view
+    {
+        $histories = ChatHistory::where('user_id', Auth::id())
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return view('your.view.name', compact('histories'));
+    }
+
+    public function history()
+    {
+        $histories = \App\Models\ChatHistory::where('user_id', Auth::id())
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return response()->json($histories);
+    }
+
+
     public function chat(Request $request)
     {
         $request->validate([
@@ -21,6 +43,13 @@ class AiController extends Controller
                 'reply' => '❌ GEMINI_API_KEY belum diisi di file .env'
             ], 500);
         }
+
+        // simpan pesan user dulu
+        $history = ChatHistory::create([
+            'user_id' => Auth::id(),
+            'message' => $request->message,
+            'reply'   => null
+        ]);
 
         try {
             $response = Http::withoutVerifying()->withHeaders([
@@ -40,7 +69,6 @@ class AiController extends Controller
 
             $data = $response->json();
 
-            // sesuai struktur log lo
             if (!isset($data['candidates'][0]['content']['parts'][0]['text'])) {
                 Log::error($data);
                 return response()->json([
@@ -48,8 +76,15 @@ class AiController extends Controller
                 ], 500);
             }
 
+            $reply = $data['candidates'][0]['content']['parts'][0]['text'];
+
+            // update balasan AI ke database
+            $history->update([
+                'reply' => $reply
+            ]);
+
             return response()->json([
-                'reply' => $data['candidates'][0]['content']['parts'][0]['text']
+                'reply' => $reply
             ]);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
