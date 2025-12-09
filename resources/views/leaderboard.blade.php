@@ -20,7 +20,7 @@
                 <div class="flex items-center justify-between py-3">
                     <div class="flex items-center gap-4">
                         <!-- Rank -->
-                        <span class="text-lg font-bold w-6 text-center">{{ $index + 1 }}</span>
+                        <span class="text-lg font-bold w-6 text-center">{{ $leader->rank }}</span>
 
                         <!-- Avatar -->
                         <img src="{{ $leader->user->profile && $leader->user->profile->profile_picture ? asset('storage/' . $leader->user->profile->profile_picture) : asset('images/default-avatar.png') }}"
@@ -28,15 +28,23 @@
 
                         <!-- Name -->
                         <span class="text-gray-800 font-semibold">{{ $leader->user->name }}</span>
+
+                        <!-- Badge -->
+                        @if ($leader->badge)
+                            <span
+                                class="ml-2 px-2 py-1 text-sm rounded bg-yellow-100 text-yellow-800">{{ $leader->badge }}</span>
+                        @endif
                     </div>
 
                     <!-- Weekly XP -->
-                    <span class="text-gray-600 font-medium">{{ $leader->weekly_xp }} XP</span>
+                    <span class="text-gray-600 font-medium">{{ $leader->weekly_xp }} XP (Level
+                        {{ $leader->level }})</span>
                 </div>
             @empty
                 <p class="text-center text-gray-500">No leaderboard data yet.</p>
             @endforelse
         </div>
+
     </div>
 
 </body>

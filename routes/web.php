@@ -29,9 +29,7 @@ use App\Http\Controllers\AiController;
 
 Route::post('/ai-chat', [AiController::class, 'chat']);
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
 
 
 Route::get('/register', [RegisterController::class, 'showForm'])->name('register');
@@ -45,6 +43,9 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth', 'role:member'])->group(function () {
 
+    Route::get('/', function () {
+        return view('dashboard');
+    });
     // dashboard user
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -79,7 +80,7 @@ Route::middleware(['auth', 'role:member'])->group(function () {
     Route::get('/certificate', [CertificateController::class, 'index'])->name('certificate');
 
     Route::get('/certificate/download/{course}', [CertificateController::class, 'download'])
-    ->name('certificate.download');
+        ->name('certificate.download');
 
 
     // settings

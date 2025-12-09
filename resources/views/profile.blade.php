@@ -43,7 +43,18 @@
                     <p class="text-lg font-semibold">{{ $profile->total_xp ?? 0 }}</p>
                     <p class="text-gray-500 text-sm">Total XP</p>
                 </div>
+                @if ($user->leaderboard)
+                    <p>Rank: {{ $user->leaderboard->rank }}</p>
+                    @if ($user->leaderboard->badge)
+                        <p>Badge: <span>{{ $user->leaderboard->badge }}</span></p>
+                    @endif
+                @else
+                    <p>Belum ada data leaderboard.</p>
+                @endif
             </div>
+
+
+
 
             <!-- Bio -->
             @if ($profile && $profile->bio)
